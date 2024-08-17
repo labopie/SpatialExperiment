@@ -2,6 +2,8 @@
 
 #include "Math.h"
 
+const static Edge theInvalidEdge = std::make_pair(sf::Vector2f{ -999.f, -999.f }, sf::Vector2f{ -999.f, -999.f });
+
 Triangle::Triangle(float aVertexDefaultValue)
 {
 	const auto defaultValue = sf::Vector2f(aVertexDefaultValue, aVertexDefaultValue);
@@ -17,6 +19,8 @@ Triangle::Triangle(const sf::Vector2f& aFirstVertex, const sf::Vector2f& aSecond
 	myEdges[0] = { myVertexes[0], myVertexes[1] };
 	myEdges[1] = { myVertexes[1], myVertexes[2] };
 	myEdges[2] = { myVertexes[0], myVertexes[2] };
+
+	myCircumcenter = CalculateCircumCenter();
 }
 
 bool Triangle::operator==(const Triangle& anotherTriangle) const
@@ -35,6 +39,45 @@ bool Triangle::operator==(const Triangle& anotherTriangle) const
 bool Triangle::operator!=(const Triangle& anotherTriangle) const
 {
 	return !(*this == anotherTriangle);
+}
+
+bool Triangle::ShareEdge(const Triangle& anotherTriangle) const
+{
+	for (const auto& edge : myEdges)
+	{
+		if (anotherTriangle.ShareEdge(edge))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+const Edge& Triangle::GetSharedEdge(const Triangle& anotherTriangle) const
+{
+	for (const auto& edge : myEdges)
+	{
+		if (anotherTriangle.ShareEdge(edge))
+		{
+			return edge;
+		}
+	}
+
+	return theInvalidEdge;
+}
+
+bool Triangle::ContainVertex(const Triangle& anotherTriangle) const
+{
+	for (const auto& edge : myEdges)
+	{
+		if (anotherTriangle.ContainVertex(edge.first) || anotherTriangle.ContainVertex(edge.second))
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool Triangle::ContainVertex(const sf::Vector2f& aVertexToCheck) const
@@ -69,9 +112,8 @@ bool Triangle::ShareEdge(const Edge& anEdgeToCheck) const
 bool Triangle::IsPointInsideIncircle(const sf::Vector2f& aPointToCheck) const
 {
 	const auto radius = CalculateCircumRadius();
-	const auto center = CalculateCircumCenter();
 
-	return Mathematics::CalculateDistance(aPointToCheck, center) < radius;
+	return Mathematics::CalculateDistance(aPointToCheck, myCircumcenter) < radius;
 }
 
 float Triangle::CalculateCircumRadius() const
