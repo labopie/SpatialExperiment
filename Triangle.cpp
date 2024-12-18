@@ -25,15 +25,10 @@ Triangle::Triangle(const sf::Vector2f& aFirstVertex, const sf::Vector2f& aSecond
 
 bool Triangle::operator==(const Triangle& anotherTriangle) const
 {
-	for (const auto& vertex : anotherTriangle.myVertexes)
-	{
-		if (!ContainVertex(vertex))
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return
+		(Mathematics::CalculateDistance(myVertexes[0], anotherTriangle.myVertexes[0]) < 0.1f || Mathematics::CalculateDistance(myVertexes[0], anotherTriangle.myVertexes[1]) < 0.1f || Mathematics::CalculateDistance(myVertexes[0], anotherTriangle.myVertexes[2]) < 0.1f) &&
+		(Mathematics::CalculateDistance(myVertexes[1], anotherTriangle.myVertexes[0]) < 0.1f || Mathematics::CalculateDistance(myVertexes[1], anotherTriangle.myVertexes[1]) < 0.1f || Mathematics::CalculateDistance(myVertexes[1], anotherTriangle.myVertexes[2]) < 0.1f) &&
+		(Mathematics::CalculateDistance(myVertexes[2], anotherTriangle.myVertexes[0]) < 0.1f || Mathematics::CalculateDistance(myVertexes[2], anotherTriangle.myVertexes[1]) < 0.1f || Mathematics::CalculateDistance(myVertexes[2], anotherTriangle.myVertexes[2]) < 0.1f);
 }
 
 bool Triangle::operator!=(const Triangle& anotherTriangle) const
@@ -82,31 +77,20 @@ bool Triangle::ContainVertex(const Triangle& anotherTriangle) const
 
 bool Triangle::ContainVertex(const sf::Vector2f& aVertexToCheck) const
 {
-	for (const auto& vertex : myVertexes)
-	{
-		if (Mathematics::CalculateDistance(aVertexToCheck, vertex) < 0.1f)
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return Mathematics::CalculateDistance(aVertexToCheck, myVertexes[0]) < 0.1f || 
+		   Mathematics::CalculateDistance(aVertexToCheck, myVertexes[1]) < 0.1f ||
+		   Mathematics::CalculateDistance(aVertexToCheck, myVertexes[2]) < 0.1f;
 }
 
 bool Triangle::ShareEdge(const Edge& anEdgeToCheck) const
 {
-	for (const auto& edge : myEdges)
-	{
-		if ((Mathematics::CalculateDistance(edge.first, anEdgeToCheck.first) < 0.1f) && (Mathematics::CalculateDistance(edge.second, anEdgeToCheck.second) < 0.1f))
-		{
-			return true;
-		}
-		if ((Mathematics::CalculateDistance(edge.first, anEdgeToCheck.second) < 0.1f) && (Mathematics::CalculateDistance(edge.second, anEdgeToCheck.first) < 0.1f))
-		{
-			return true;
-		}
-	}
-	return false;
+	return
+		Mathematics::CalculateDistance(myEdges[0].first, anEdgeToCheck.first) < 0.1f && Mathematics::CalculateDistance(myEdges[0].second, anEdgeToCheck.second) < 0.1f ||
+			Mathematics::CalculateDistance(myEdges[0].first, anEdgeToCheck.second) < 0.1f && Mathematics::CalculateDistance(myEdges[0].second, anEdgeToCheck.first) < 0.1f ||
+				Mathematics::CalculateDistance(myEdges[1].first, anEdgeToCheck.first) < 0.1f && Mathematics::CalculateDistance(myEdges[1].second, anEdgeToCheck.second) < 0.1f ||
+					Mathematics::CalculateDistance(myEdges[1].first, anEdgeToCheck.second) < 0.1f && Mathematics::CalculateDistance(myEdges[1].second, anEdgeToCheck.first) < 0.1f ||
+						Mathematics::CalculateDistance(myEdges[2].first, anEdgeToCheck.first) < 0.1f && Mathematics::CalculateDistance(myEdges[2].second, anEdgeToCheck.second) < 0.1f ||
+							Mathematics::CalculateDistance(myEdges[2].first, anEdgeToCheck.second) < 0.1f && Mathematics::CalculateDistance(myEdges[2].second, anEdgeToCheck.first) < 0.1f;
 }
 
 bool Triangle::IsPointInsideIncircle(const sf::Vector2f& aPointToCheck) const
