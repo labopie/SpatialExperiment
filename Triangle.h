@@ -23,6 +23,8 @@ public:
 	bool ShareEdge(const Triangle& anotherTriangle) const;
 	bool ShareEdge(const Edge& anEdgeToCheck) const;
 
+	bool IsPointInside(const sf::Vector2f& aPoint) const;
+
 	const Edge& GetSharedEdge(const Triangle& anotherTriangle) const;
 
 	bool IsPointInsideIncircle(const sf::Vector2f& aPointToCheck) const;
@@ -37,6 +39,8 @@ public:
 	const std::array<sf::Vector2f, 3>& GetVertexes() const { return myVertexes; }
 
 	const std::array<Edge, 3>& GetEdges() const { return myEdges; }
+
+	float CalculateArea() const;
 
 private:
 

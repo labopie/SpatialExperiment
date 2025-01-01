@@ -38,25 +38,22 @@ bool Triangle::operator!=(const Triangle& anotherTriangle) const
 
 bool Triangle::ShareEdge(const Triangle& anotherTriangle) const
 {
-	for (const auto& edge : myEdges)
-	{
-		if (anotherTriangle.ShareEdge(edge))
-		{
-			return true;
-		}
-	}
-
-	return false;
+	return anotherTriangle.ShareEdge(myEdges[0]) || anotherTriangle.ShareEdge(myEdges[1]) || anotherTriangle.ShareEdge(myEdges[2]);
 }
 
 const Edge& Triangle::GetSharedEdge(const Triangle& anotherTriangle) const
 {
-	for (const auto& edge : myEdges)
+	if (anotherTriangle.ShareEdge(myEdges[0]))
 	{
-		if (anotherTriangle.ShareEdge(edge))
-		{
-			return edge;
-		}
+		return myEdges[0];
+	}
+	else if (anotherTriangle.ShareEdge(myEdges[1]))
+	{
+		return myEdges[1];
+	}
+	else if (anotherTriangle.ShareEdge(myEdges[2]))
+	{
+		return myEdges[2];
 	}
 
 	return theInvalidEdge;
@@ -93,6 +90,19 @@ bool Triangle::ShareEdge(const Edge& anEdgeToCheck) const
 							Mathematics::CalculateDistance(myEdges[2].first, anEdgeToCheck.second) < 0.1f && Mathematics::CalculateDistance(myEdges[2].second, anEdgeToCheck.first) < 0.1f;
 }
 
+bool Triangle::IsPointInside(const sf::Vector2f& aPoint) const
+{
+	//Create 3 triangle with the point and calculate each area. If the sum of the 3 areas is equal to the area of the triangle, the point is inside.
+	const auto area = CalculateArea();
+
+	Triangle firstSubTriangle(myVertexes[0], myVertexes[1], aPoint);
+	Triangle secondSubTriangle(myVertexes[0], aPoint, myVertexes[2]);
+	Triangle thirdSubTriangle(aPoint, myVertexes[1], myVertexes[2]);
+
+
+	return area == firstSubTriangle.CalculateArea() + secondSubTriangle.CalculateArea() + thirdSubTriangle.CalculateArea();
+}
+
 bool Triangle::IsPointInsideIncircle(const sf::Vector2f& aPointToCheck) const
 {
 	const auto radius = CalculateCircumRadius();
@@ -121,6 +131,11 @@ float Triangle::CalculateDelta() const
 	const auto s = (segmentA + segmentB + segmentC) * 0.5f;
 
 	return 4.f * sqrt(s * (segmentA + segmentB - s) * (segmentB + segmentC - s) * (segmentA + segmentC - s));
+}
+
+float Triangle::CalculateArea() const
+{
+	return abs((myVertexes[0].x * (myVertexes[1].y - myVertexes[2].y) + myVertexes[1].x * (myVertexes[2].y - myVertexes[0].y) + myVertexes[2].x * (myVertexes[0].y - myVertexes[1].y)) / 2.0);
 }
 
 sf::Vector2f Triangle::CalculateCircumCenter() const
